@@ -122,6 +122,14 @@ class TimeTracker < ActiveRecord::Base
       current_time = Time.now.localtime.change(:sec => 0)
       last_timelog = TimeLog.where("stopped_at > ?", current_time).first
       self.started_on =  last_timelog.present? ? last_timelog.stopped_at : current_time
+      if self.project_id
+        project = Project.find(self.project_id)
+        if project
+          activities = project.activities
+          default_activity = activities.find_by_is_default(true) || (activities.first if activities.count == 1)
+          self.activity_id = default_activity.id if default_activity
+        end
+      end
       self.save
     end
   end
