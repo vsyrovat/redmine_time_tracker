@@ -5,12 +5,13 @@
 <% time_tracker = time_tracker_for(User.current) %>
 <% timer_link = if !time_tracker.nil? %>
 <%# A time tracker exists, display the stop action %>
-    <% suffix = time_tracker.issue_id.nil? ? l(:time_tracker_label_timer) : '#' + time_tracker.issue_id.to_s %>
-    <% stop_title = l(:stop_time_tracker).capitalize + ' ' + suffix %>
-    <% link_to stop_title,
-           {:controller => 'time_trackers', :action => 'stop'},
-           :class => 'icon icon-stop tt_stop',
-           :data => {:type => 'html'}
+<%
+if time_tracker.issue_id
+ str = link_to l(:stop_time_tracker).capitalize, {:controller => 'time_trackers', :action => 'stop'}, :class => 'icon icon-stop tt_stop', :data => {:type => 'html'}
+ str += link_to "##{time_tracker.issue_id}", "/issues/#{time_tracker.issue_id}"
+else
+  link_to l(:stop_time_tracker).capitalize + ' ' + l(:time_tracker_label_timer), {:controller => 'time_trackers', :action => 'stop'}, :class => 'icon icon-stop tt_stop', :data => {:type => 'html'}
+end
 %>
 <% elsif User.current.allowed_to_globally?(:tt_log_time,{}) %>
 <%# No time tracker is running, but the user has the rights to track time %>
